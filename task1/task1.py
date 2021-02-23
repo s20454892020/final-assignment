@@ -26,7 +26,7 @@ def getCmdArgs():
   # create an argparse object with a useful help comment
   p = argparse.ArgumentParser(description=("An illustration of a command line parser"))
   # read a string
-  p.add_argument("--input",dest="inName",type=str,default='/geos/netdata/oosa/assignment/lvis/2015/ILVIS1B_AQ2015_1012_R1605_055228.h5',help=("Input filename"))
+  p.add_argument("--input",dest="inName",type=str,default='/geos/netdata/oosa/assignment/lvis/2009/ILVIS1B_AQ2009_1020_R1408_049700.h5',help=("Input filename"))
   p.add_argument("--outRoot",dest="outRoot",type=str,default='waveforms',help=("Output filename root"))
   # parse the command line into an object
   cmdargs = p.parse_args()
@@ -39,32 +39,6 @@ class tiffHandle(lvisGround):
   '''
   Class to handle geotiff files
   '''
-
-  ########################################
-
-  # def __init__(self,filename):
-  #   '''
-  #   Class initialiser
-  #   Does nothing as this is only an example
-  #   '''
-  #   self.minX= -10000
-  #   self.res=30
-  #   self.maxY=10000
-
-  # def __init__(self,filename,setElev=False,minX=-100000000,maxX=100000000,minY=-1000000000,maxY=100000000,onlyBounds=False):
-  #   self.minX=minX
-  #   self.maxX=maxX
-  #   self.minY=minY
-  #   self.maxY=maxY
-  #   self.res=30
-  #   self.nX=int((maxX-minX)/self.res+1)
-  #   self.nY=int((maxY-minY)/self.res+1)
-  #
-  #   # call the file reader and load in to the self
-  #   self.readLVIS(filename,minX,minY,maxX,maxY,onlyBounds)
-  #   if(setElev):     # to save time, only read elev if wanted
-  #     self.setElevations()
-  #     self.nWaves()
 
   ########################################
 
@@ -123,6 +97,10 @@ class tiffHandle(lvisGround):
     ds=gdal.Open(filename)
     # could use gdal.Warp to reproject if wanted?
 
+    # # loop over list of pixels
+    # for i in range(0,self.nX,self.nY,step):
+    #   self.readTiff(i,outRoot=outRoot)
+
     # read data from geotiff object
     self.nX=ds.RasterXSize             # number of pixels in x direction
     self.nY=ds.RasterYSize             # number of pixels in y direction
@@ -169,12 +147,3 @@ if __name__=="__main__":
       lvis.CofG()
       lvis.reproject(3031)
       lvis.writeTiff()
-
-      #lvis.findStats()
-      #lvis.denoise()
-      #lvis.readLVIS()
-      #lvis.getOneWave()
-
-  #b.writeTiff(data=b.waves)
-  #b.writeTiff()
-  #print(b.nWaves)
