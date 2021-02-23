@@ -77,9 +77,9 @@ class lvisGround(lvisData):
     inProj=Proj(init="epsg:4326")
     outProj=Proj(init="epsg:"+str(outEPSG))
     # reproject data
-    x,y=transform(inProj,outProj,self.lon,self.lat)
-    self.lon=x
-    self.lat=y
+    self.x,self.y=transform(inProj,outProj,self.lon,self.lat)
+    self.lon=self.x
+    self.lat=self.y
 
 
   ##############################################

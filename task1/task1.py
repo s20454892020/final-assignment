@@ -26,7 +26,7 @@ def getCmdArgs():
   # create an argparse object with a useful help comment
   p = argparse.ArgumentParser(description=("An illustration of a command line parser"))
   # read a string
-  p.add_argument("--input",dest="inName",type=str,default='/geos/netdata/oosa/assignment/lvis/2009/ILVIS1B_AQ2009_1020_R1408_049700.h5',help=("Input filename"))
+  p.add_argument("--input",dest="inName",type=str,default='/geos/netdata/oosa/assignment/lvis/2015/ILVIS1B_AQ2015_1012_R1605_055228.h5',help=("Input filename"))
   p.add_argument("--outRoot",dest="outRoot",type=str,default='waveforms',help=("Output filename root"))
   # parse the command line into an object
   cmdargs = p.parse_args()
@@ -68,15 +68,16 @@ class tiffHandle(lvisGround):
 
   ########################################
 
-  def writeTiff(self,data,x,y,res,filename="chm.tif"):
+  def writeTiff(self,res=30,filename="chm.tif",epsg=27700):
     '''
     Write a geotiff from a raster layer
     '''
     # determine bounds
-    minX=np.min(x)
-    maxX=np.max(x)
-    minY=np.min(y)
-    maxY=np.max(y)
+
+    minX=np.min(self.x)
+    maxX=np.max(self.x)
+    minY=np.min(self.y)
+    maxY=np.max(self.y)
 
     # determine image size
     nX=int((maxX-minX)/res+1)
@@ -86,22 +87,22 @@ class tiffHandle(lvisGround):
     imageArr=np.full((nY,nX),-999.0)        # make an array of missing data flags
 
     # use integer division to determine which pixel each belongs to
-    xInds=(x-minX)//res
-    yInds=(maxY-y)//res   # remember that y in a geotiff counts from the top
+    xInds=np.array((self.x-minX)/res,dtype=int)
+    yInds=np.array((maxY-self.y)/res,dtype=int) # remember that y in a geotiff counts from the top
 
     # this is a simple pack which will assign a single footprint to each pixel
     imageArr[yInds,xInds]=lvis.zG
     # set geolocation information (note geotiffs count down from top edge in Y)
-    geotransform = (self.minX, self.res, 0, self.maxY, 0, -1*self.res)
+    geotransform = (minX, res, 0, maxY, 0, -1*res)
 
     # load data in to geotiff object
-    dst_ds = gdal.GetDriverByName('GTiff').Create(filename, self.nX, self.nY, 1, gdal.GDT_Float32)
+    dst_ds = gdal.GetDriverByName('GTiff').Create(filename, nX, nY, 1, gdal.GDT_Float32)
 
     dst_ds.SetGeoTransform(geotransform)    # specify coords
     srs = osr.SpatialReference()            # establish encoding
     srs.ImportFromEPSG(epsg)                # WGS84 lat/long
     dst_ds.SetProjection(srs.ExportToWkt()) # export coords to file
-    dst_ds.GetRasterBand(1).WriteArray(data)  # write image to the raster
+    dst_ds.GetRasterBand(1).WriteArray(imageArr)  # write image to the raster
     dst_ds.GetRasterBand(1).SetNoDataValue(-999)  # set no data value
     dst_ds.FlushCache()                     # write to disk
     dst_ds = None
@@ -167,7 +168,7 @@ if __name__=="__main__":
       lvis.setThreshold(threshScale=5)
       lvis.CofG()
       lvis.reproject(3031)
-      lvis.writeTiff(data=lvis.zG,x=10000,y=10000,res=30)
+      lvis.writeTiff()
 
       #lvis.findStats()
       #lvis.denoise()
