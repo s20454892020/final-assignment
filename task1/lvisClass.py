@@ -63,7 +63,6 @@ class lvisData(object):
       useInd=useInd[0]
 
     if(len(useInd)==0):
-      # print("No data contained in that region")
       self.nWaves=0
       return
 

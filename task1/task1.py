@@ -27,8 +27,8 @@ def getCmdArgs():
   p = argparse.ArgumentParser(description=("An illustration of a command line parser"))
   # read a string
   p.add_argument("--input",dest="inName",type=str,default='/geos/netdata/oosa/assignment/lvis/2009/ILVIS1B_AQ2009_1020_R1408_049700.h5',help=("Input filename"))
-  p.add_argument("--outRoot",dest="outRoot",type=str,default='waveforms',help=("Output filename root"))
-  # parse the command line into an object
+  p.add_argument("--outRoot",dest="outRoot",type=str,default='chm.tif',help=("Output filename root"))
+  # run the parsers and load results into an object
   cmdargs = p.parse_args()
   # return that object from this function
   return cmdargs
@@ -41,11 +41,15 @@ class tiffHandle(lvisGround):
   '''
 
   ########################################
+  def writeTiffs(self,filename="chm.tif",step=1):
+    for i in range(0,self.zG,step):
+      self.writeTiff(o,filename=filename)
 
   def writeTiff(self,res=30,filename="chm.tif",epsg=27700):
     '''
     Write a geotiff from a raster layer
     '''
+
     # determine bounds
 
     minX=np.min(self.x)
@@ -54,8 +58,8 @@ class tiffHandle(lvisGround):
     maxY=np.max(self.y)
 
     # determine image size
-    nX=int((maxX-minX)/res+1)
-    nY=int((maxY-minY)/res+1)
+    nX=int((maxX-minX)//res+1)
+    nY=int((maxY-minY)//res+1)
 
     # pack in to array
     imageArr=np.full((nY,nX),-999.0)        # make an array of missing data flags
@@ -88,30 +92,27 @@ class tiffHandle(lvisGround):
 
   ########################################
 
-  def readTiff(self,filename,epsg=27700):
-    '''
-    Read a geotiff in to RAM
-    '''
+  # def readTiff(self,filename,epsg=27700):
+  #   '''
+  #   Read a geotiff in to RAM
+  #   '''
+  #
+  #   # open a dataset object
+  #   ds=gdal.Open(filename)
+  #   # could use gdal.Warp to reproject if wanted?
+  #
+  #   # read data from geotiff object
+  #   self.nX=ds.RasterXSize             # number of pixels in x direction
+  #   self.nY=ds.RasterYSize             # number of pixels in y direction
+  #   # geolocation tiepoint
+  #   transform_ds = ds.GetGeoTransform()# extract geolocation information
+  #   self.xOrigin=transform_ds[0]       # coordinate of x corner
+  #   self.yOrigin=transform_ds[3]       # coordinate of y corner
+  #   self.pixelWidth=transform_ds[1]    # resolution in x direction
+  #   self.pixelHeight=transform_ds[5]   # resolution in y direction
+  #   # read data. Returns as a 2D numpy array
+  #   self.data=ds.GetRasterBand(1).ReadAsArray(0,0,self.nX,self.nY)
 
-    # open a dataset object
-    ds=gdal.Open(filename)
-    # could use gdal.Warp to reproject if wanted?
-
-    # # loop over list of pixels
-    # for i in range(0,self.nX,self.nY,step):
-    #   self.readTiff(i,outRoot=outRoot)
-
-    # read data from geotiff object
-    self.nX=ds.RasterXSize             # number of pixels in x direction
-    self.nY=ds.RasterYSize             # number of pixels in y direction
-    # geolocation tiepoint
-    transform_ds = ds.GetGeoTransform()# extract geolocation information
-    self.xOrigin=transform_ds[0]       # coordinate of x corner
-    self.yOrigin=transform_ds[3]       # coordinate of y corner
-    self.pixelWidth=transform_ds[1]    # resolution in x direction
-    self.pixelHeight=transform_ds[5]   # resolution in y direction
-    # read data. Returns as a 2D numpy array
-    self.data=ds.GetRasterBand(1).ReadAsArray(0,0,self.nX,self.nY)
 
 
 #######################################################
@@ -131,7 +132,8 @@ if __name__=="__main__":
   # loop over spatial subsets
   for x0 in np.arange(b.bounds[0],b.bounds[2],step):  # loop over x tiles
     x1=x0+step   # the right side of the tile
-    for y0 in np.arange(b.bounds[1],b.bounds[3],step):  # loop over y tiles
+    for y0 in np.arange(b.bounds[1],b.bounds[3],step):
+       # loop over y tiles
       y1=y0+step  # the top of the tile
 
       # print the bounds to screen as a sanity check
@@ -146,4 +148,5 @@ if __name__=="__main__":
       lvis.setThreshold(threshScale=5)
       lvis.CofG()
       lvis.reproject(3031)
+      # lvis.writeTiff(step=int(lvis.zG/100),outRoot=outRoot+".x."+str(x0)+".y."+str(y0))
       lvis.writeTiff()

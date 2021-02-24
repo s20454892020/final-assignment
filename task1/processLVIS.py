@@ -94,6 +94,8 @@ class lvisGround(lvisData):
     self.stdevNoise=np.empty(self.nWaves)
 
     # determine number of bins to calculate stats over
+    if self.z == []:
+        return
     res=(self.z[0,0]-self.z[0,-1])/self.nBins    # range resolution
     noiseBins=int(statsLen/res)   # number of bins within "statsLen"
 
