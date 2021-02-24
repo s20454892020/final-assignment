@@ -69,8 +69,7 @@ class tiffHandle(lvisGround):
     yInds=np.array((maxY-self.y)//res,dtype=int) # remember that y in a geotiff counts from the top
 
     # this is a simple pack which will assign a single footprint to each pixel
-    for i in range(0,yInds.shape[0]):
-        imageArr[yInds,xInds]=lvis.zG
+    imageArr[yInds,xInds]=lvis.zG
     # set geolocation information (note geotiffs count down from top edge in Y)
     geotransform = (minX, res, 0, maxY, 0, -1*res)
 
