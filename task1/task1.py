@@ -65,11 +65,12 @@ class tiffHandle(lvisGround):
     imageArr=np.full((nY,nX),-999.0)        # make an array of missing data flags
 
     # use integer division to determine which pixel each belongs to
-    xInds=np.array((self.x-minX)/res,dtype=int)
-    yInds=np.array((maxY-self.y)/res,dtype=int) # remember that y in a geotiff counts from the top
+    xInds=np.array((self.x-minX)//res,dtype=int)
+    yInds=np.array((maxY-self.y)//res,dtype=int) # remember that y in a geotiff counts from the top
 
     # this is a simple pack which will assign a single footprint to each pixel
-    imageArr[yInds,xInds]=lvis.zG
+    for i in range(0,yInds.shape[0]):
+        imageArr[yInds,xInds]=lvis.zG
     # set geolocation information (note geotiffs count down from top edge in Y)
     geotransform = (minX, res, 0, maxY, 0, -1*res)
 
@@ -145,6 +146,7 @@ if __name__=="__main__":
       # set elevation, though this is not used here, but would be if you
       lvis.setElevations()    # were making a DTM
       lvis.estimateGround()
+      lvis.findStats()
       lvis.setThreshold(threshScale=5)
       lvis.CofG()
       lvis.reproject(3031)
