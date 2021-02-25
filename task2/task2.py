@@ -47,7 +47,7 @@ class tiffHandle(lvisGround):
     for i in range(0,self.zG,step):
       self.writeTiff(o,filename=filename)
 
-  def writeTiff(self,res=30,filename="chm.tif",epsg=27700):
+  def writeTiff(self,res=10,filename="chm.tif",epsg=27700):
     '''
     Write a geotiff from a raster layer
     '''
@@ -90,6 +90,22 @@ class tiffHandle(lvisGround):
     print("Image written to",filename)
     return
 
+  ########################################
+  def gapfilled(self):
+
+
+  ########################################
+  def mertiff(self):
+  gdal_merge.py [-o out_filename] [-of out_format] [-co NAME=VALUE]*
+          [-ps pixelsize_x pixelsize_y] [-tap] [-separate] [-q] [-v] [-pct]
+          [-ul_lr ulx uly lrx lry] [-init "value [value...]"]
+          [-n nodata_value] [-a_nodata output_nodata_value]
+          [-ot datatype] [-createonly] input_files
+
+
+
+
+
 
 
   ########################################
@@ -123,34 +139,34 @@ if __name__=="__main__":
 
   # read the command line
   cmd=getCmdArgs()
-  fileList=glob(cmd.inDir+'/*.lvis')
-  outRoot=cmd.outRoot
 
-  for filename in fileList:
-      # create instance of class with "onlyBounds" flag
-      b= tiffHandle(filename,onlyBounds=True)
-      # set a steo size (note that this will be in degrees)
-      step=(b.bounds[2]-b.bounds[0])/6
+  #list directory
+  fileList=glob(cmd.inDir+'/*.h5')
 
-      # loop over spatial subsets
-      for x0 in np.arange(b.bounds[0],b.bounds[2],step):  # loop over x tiles
-        x1=x0+step   # the right side of the tile
-        for y0 in np.arange(b.bounds[1],b.bounds[3],step):
-           # loop over y tiles
-          y1=y0+step  # the top of the tile
+  # create instance of class with "onlyBounds" flag
+  b= tiffHandle(filename,onlyBounds=True)
+  # set a steo size (note that this will be in degdrees)
+  step=(b.bounds[2]-b.bounds[0])/6
 
-          # print the bounds to screen as a sanity check
-          print("Tile between",x0,y0,"to",x1,y1)
+  # loop over spatial subsets
+  for x0 in np.arange(b.bounds[0],b.bounds[2],step):  # loop over x tiles
+    x1=x0+step   # the right side of the tile
+    for y0 in np.arange(b.bounds[1],b.bounds[3],step):
+       # loop over y tiles
+      y1=y0+step  # the top of the tile
 
-          # read in all data within our spatial subset
-          lvis=tiffHandle(filename,minX=x0,minY=y0,maxX=x1,maxY=y1)
+      # print the bounds to screen as a sanity check
+      print("Tile between",x0,y0,"to",x1,y1)
 
-          # set elevation, though this is not used here, but would be if you
-          lvis.setElevations()    # were making a DTM
-          lvis.estimateGround()
-          lvis.findStats()
-          lvis.setThreshold(threshScale=5)
-          lvis.CofG()
-          lvis.reproject(3031)
-          # lvis.writeTiff(step=int(lvis.zG/100),outRoot=outRoot+".x."+str(x0)+".y."+str(y0))
-          lvis.writeTiff()
+      # read in all data within our spatial subset
+      lvis=tiffHandle(filename,minX=x0,minY=y0,maxX=x1,maxY=y1)
+
+      # set elevation, though this is not used here, but would be if you
+      lvis.setElevations()    # were making a DTM
+      lvis.estimateGround()
+      lvis.findStats()
+      lvis.setThreshold(threshScale=5)
+      lvis.CofG()
+      lvis.reproject(3031)
+      # lvis.writeTiff(step=int(lvis.zG/100),outRoot=outRoot+".x."+str(x0)+".y."+str(y0))
+      lvis.writeTiff()

@@ -142,6 +142,10 @@ if __name__=="__main__":
       # read in all data within our spatial subset
       lvis=tiffHandle(filename,minX=x0,minY=y0,maxX=x1,maxY=y1)
 
+      # check to see whether any data is contained
+      if(lvis.nWaves==0): # if there is none, skip this tile
+        continue
+
       # set elevation, though this is not used here, but would be if you
       lvis.setElevations()    # were making a DTM
       lvis.estimateGround()
@@ -149,5 +153,5 @@ if __name__=="__main__":
       lvis.setThreshold(threshScale=5)
       lvis.CofG()
       lvis.reproject(3031)
-      # lvis.writeTiff(step=int(lvis.zG/100),outRoot=outRoot+".x."+str(x0)+".y."+str(y0))
-      lvis.writeTiff()
+      lvis.writeTiff("chm"+".x."+str(x0)+".y."+str(y0)+".tif")
+      #lvis.writeTiff()
