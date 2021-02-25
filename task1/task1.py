@@ -153,5 +153,6 @@ if __name__=="__main__":
       lvis.setThreshold(threshScale=5)
       lvis.CofG()
       lvis.reproject(3031)
-      lvis.writeTiff("chm"+".x."+str(x0)+".y."+str(y0)+".tif")
+      lvis.writeTiff(filename="chm"+".x."+str(x0)+".y."+str(y0)+".tif")
+
       #lvis.writeTiff()

@@ -66,6 +66,20 @@ class lvisGround(lvisData):
       if(np.sum(self.denoised[i])>0.0):   # avoid empty waveforms (clouds etc)
         self.zG[i]=np.average(self.z[i],weights=self.denoised[i])
 
+    # create the neighbour distance to calculate
+    neighbourDis=10000
+    for i in range(0,self.nWaves):
+        #if zG = 0 conduct the
+        if(self.zG[i]==0):
+            if i < neighbourDis:
+                neighbourList=zG[:i+neighbourDis]
+            elif i+neighbourDis >= self.nWaves:
+                neighbourList=zG[i-neighbourDis:]
+            else:
+                neighbourList=zG[i-neighbourDis:i+neighbourDis]
+            self.zG[i]=np.average(neighbourList)
+
+
 
   #######################################################
 
@@ -77,9 +91,9 @@ class lvisGround(lvisData):
     inProj=Proj(init="epsg:4326")
     outProj=Proj(init="epsg:"+str(outEPSG))
     # reproject data
-    x,y=transform(inProj,outProj,self.lon,self.lat)
-    self.lon=x
-    self.lat=y
+    self.x,self.y=transform(inProj,outProj,self.lon,self.lat)
+    self.lon=self.x
+    self.lat=self.y
 
 
   ##############################################
@@ -94,6 +108,8 @@ class lvisGround(lvisData):
     self.stdevNoise=np.empty(self.nWaves)
 
     # determine number of bins to calculate stats over
+    if self.z == []:
+        return
     res=(self.z[0,0]-self.z[0,-1])/self.nBins    # range resolution
     noiseBins=int(statsLen/res)   # number of bins within "statsLen"
 
