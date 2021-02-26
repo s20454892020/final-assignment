@@ -29,10 +29,10 @@ This class includes one method`writeTiff()`
 
 In this method,  the variables we used shows as follow:
 
-`minX,maxX,minY,maxY : to determine the bounds`
-`nX,nY: to determine image size`
-`imageArr: to pack into array`
-`geotransform: to set geolocation information`
+`minX,maxX,minY,maxY : to determine the bounds
+nX,nY: to determine image size
+imageArr: to pack into array
+geotransform: to set geolocation information`
 
 To set the bounds:
 
