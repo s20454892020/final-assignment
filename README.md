@@ -8,15 +8,6 @@ Task2 includes handleTiff.py, lvisClass.py, processLVIS.py,task2.py.
 
 Task3 includes handleTiff.py, lvisClass.py, processLVIS.py,task3.py.
 
-This contains all the files for task.  
-
-Task1 includes lvisClass.py, processLVIS.py, task1.py. 
-
-Task2 includes handleTiff.py, lvisClass.py, processLVIS.py,task2.py.
-
-Task3 includes handleTiff.py, lvisClass.py, processLVIS.py,task3.py.
-
-
 
 ## Task1.py
 
